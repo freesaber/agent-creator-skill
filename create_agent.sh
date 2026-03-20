@@ -1,61 +1,48 @@
 #!/bin/bash
 
 # ==========================================
-# OpenClaw 自动化创建 Agent 脚本
-# 接收两个参数：
-# $1: agent_name_en (如 java_senior_dev)
-# $2: identity_prompt (详细的身份设定 prompt)
+# OpenClaw 自动化创建 Agent 脚本 (Enhanced)
+# $1: agent_id (如 java_senior_dev)
+# $2: agent_display_name (如 Java高级开发)
+# $3: identity_prompt (详细设定)
 # ==========================================
 
-# 1. 安全检查：确保 LLM 传对了两个参数
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 3 ]; then
     echo "❌ Error: 参数数量不正确。"
-    echo "用法: bash create_agent.sh <agent_name_en> \"<identity_prompt>\""
+    echo "用法: bash create_agent.sh <id> <name> <prompt>"
     exit 1
 fi
 
-AGENT_NAME=$1
-PERSONA=$2
-# 定义目标工作区路径，统一放在 ~/.openclaw 目录下
-WORKSPACE_DIR="$HOME/.openclaw/workspace-${AGENT_NAME}"
+AGENT_ID=$1
+DISPLAY_NAME=$2
+PERSONA=$3
+WORKSPACE_DIR="$HOME/.openclaw/workspace-${AGENT_ID}"
 
-echo "🚀 开始为 OpenClaw 创建新 Agent: ${AGENT_NAME}"
-echo "📂 规划工作区路径: ${WORKSPACE_DIR}"
+echo "🚀 开始创建 Agent: ${DISPLAY_NAME} (ID: ${AGENT_ID})"
 
 # ==========================================
-# 步骤 1: 创建 Agent 并指定工作区
+# 步骤 1: 创建 Agent，使用 --name 指定显示名称
 # ==========================================
-echo "------------------------------------------"
-echo "👉 [1/2] 正在执行创建命令..."
-
-# 执行并检查是否成功
-if openclaw agents add "${AGENT_NAME}" --workspace "${WORKSPACE_DIR}"; then
-    echo "✅ Agent [${AGENT_NAME}] 工作区创建成功！"
+# 注意：${AGENT_ID} 作为位置参数传给 [name]，--name 传给显示名称
+if openclaw agents add "${AGENT_ID}" --name "${DISPLAY_NAME}" --workspace "${WORKSPACE_DIR}"; then
+    echo "✅ Agent [${DISPLAY_NAME}] 创建成功！"
 else
-    echo "❌ Agent 创建失败！该 Agent 可能已存在，或者路径无权限。"
-    exit 1 # 失败则退出，不要继续执行下一步
+    echo "❌ Agent 创建失败！"
+    exit 1
 fi
 
 # ==========================================
-# 步骤 2: 给 Agent 发送 Message，初始化身份设定
+# 步骤 2: 注入身份设定
 # ==========================================
-echo "------------------------------------------"
-echo "👉 [2/2] 正在注入身份设定 (Persona)..."
-
-# 组装初始指令，告诉这个新 Agent 记住自己的身份
 FULL_MESSAGE="记住你的身份设定：\n${PERSONA}"
 
-# 调用对应 Agent 并发送消息
-if openclaw agent --agent "${AGENT_NAME}" --message "${FULL_MESSAGE}"; then
+# 调用时使用 AGENT_ID
+if openclaw agent --agent "${AGENT_ID}" --message "${FULL_MESSAGE}"; then
     echo "✅ 身份设定注入成功！"
 else
-    echo "❌ 身份设定注入失败！请检查 OpenClaw 核心服务状态。"
+    echo "❌ 注入失败！"
     exit 1
 fi
 
-# ==========================================
-# 完成
-# ==========================================
-echo "------------------------------------------"
-echo "🎉 SUCCESS! 代理 [${AGENT_NAME}] 创建与初始化全部完成！"
+echo "🎉 SUCCESS! 代理 [${DISPLAY_NAME}] 已准备就绪！"
 exit 0
