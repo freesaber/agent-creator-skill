@@ -12,7 +12,7 @@
 
 ### 方式一：口语化在线安装（推荐）
 只要这个项目托管在 GitHub 上，你可以直接对你的 OpenClaw 主 Agent 发送指令：
-> "帮我安装这个 skill：[你的GitHub仓库URL]。请克隆到你的 skills 目录下并确保脚本有执行权限。"
+> "帮我安装这个 skill：https://github.com/freesaber/agent-creator-skill。"
 主 Agent 会自己拉取代码、配置并使其生效。
 
 ### 方式二：手动离线安装
