@@ -12,3 +12,4 @@
 1. 将此文件夹放入 `~/.openclaw/workspace/skills/` 目录下。
 2. 确保脚本有执行权限：`chmod +x create_agent.sh`
 3. 重启 OpenClaw，直接在聊天框发送指令即可。
+4. 使用的时候，还需要明确指出，不创建子代理，比如：使用agent-creator创建一个精通爬虫的代理。不要创建subagent。
